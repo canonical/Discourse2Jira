@@ -1,0 +1,9 @@
+This is the beginnings of a project to track Discourse topics
+in Jira
+
+I have a very specific use case in mind, so there are (for now)
+a lot of hardcoded details. This will change.
+
+Yes, I have vendored in dsctriage for now
+
+You need the jira python package installed to (eg: in a venv)
