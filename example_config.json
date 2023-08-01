@@ -1,0 +1,7 @@
+{   
+    "forum_url": "https://forum.snapcraft.io",
+    "forum_category": "store-requests",
+    "jira_server": "https://warthogs.atlassian.net/",
+    "jira_user": "you@email.domain",
+    "jira_api_token": ""
+}
