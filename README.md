@@ -40,7 +40,7 @@ In order to be able to post to Jira, the script needs some credentials. Use an A
 ```
 6. Run (see (initial setup)[#initial-setup] below before removing '-n')
 ```
-    $ ./main.py -n  # dry run, see what might happen
+    $ ./dsc2jira.py -n  # dry run, see what might happen
 ```
 
 ## The database format
@@ -62,7 +62,7 @@ The format for each topic is
 
 To avoid unnecessary Jira issue creation on first run (with an empty database), you should perform a database initialization with:
 ```
-$ ./main.py -i
+$ ./dsc2jira.py -i
 ```
 - This will produce a `forum_db.json` that has 0's for each Jira entry (instead of actual Jira issue numbers).
 - Inspect the database file and the forum manually and for any forum topics that already have Jira issues:
@@ -77,7 +77,7 @@ sed -i 's/\"0\"/\"skip\"/g' forum_db.json
 
 ## Search period
 
-By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./main.py -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
+By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./dsc2jira.py -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
 
 
 
