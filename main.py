@@ -122,7 +122,7 @@ def main(conf, start_date):
             if forum_topic["id"] == db_entry["id"]:
                 found = True
                 logging.debug("found a matching topic in the db")
-                if db_entry["jira"] == 0:
+                if db_entry["jira"] == "0":
                     # this shouldn't happen but for first initialization (first time script is EVER run) 
                     issue = create_issue(conf, 'SEC', forum_topic["slug"], "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review")
                     #also need to update the db
