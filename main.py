@@ -20,7 +20,7 @@ import logging
 
 
 class Configuration:
-    def __init__(self, forum_url, forum_category, jira_server, jira_user, jira_api_token, database, dryrun):
+    def __init__(self, forum_url, forum_category, jira_server, jira_user, jira_api_token, database, dryrun, initdb):
         self.forum_url = forum_url
         self.forum_category = forum_category
         self.jira_server = jira_server
@@ -28,6 +28,7 @@ class Configuration:
         self.jira_api_token = jira_api_token
         self.database = database
         self.dryrun = dryrun
+        self.initdb = initdb
     
 def fetch_forum_topics(conf, start):
 
@@ -80,7 +81,7 @@ def create_issue(config, project, summary, desc, issuetype, component):
         'components': [{'name': component}]
     }
     issue = 0
-    if not config.dryrun:
+    if not config.dryrun and not config.initdb:
         issue = jira.create_issue(fields=issue_dict)
         logging.info("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
     else:
@@ -152,6 +153,7 @@ def main(conf, start_date):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='ForumSync', description='Check that discourse topics have a matching Jira card.')
     parser.add_argument('-n', '--dry-run', dest='dryrun', help='Dry run. Do not perform any jira ticket creation or database writes', action='store_true')
+    parser.add_argument('-i', '--init-db', dest='initdb', help='Create database records for fetched topics, but do not create Jira entries', action='store_true')
     parser.add_argument('-d', '--duration', help='Date period to search back through (relative to now, eg: 1d, 2w)', default='7d')
     parser.add_argument('-f', '--database', type=str, dest='db_file', help='Optional database file (default=forum_db.json)', default='forum_db.json')
     parser.add_argument('-c', '--config', help='forum and jira configuration details file (default=config.json)', default='config.json')
@@ -162,6 +164,10 @@ if __name__ == "__main__":
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % loglevel)
     logging.basicConfig(level=numeric_level)
+
+    if args.dryrun and args.initdb:
+        logging.error("--dry-run and --init-db are mutually exclusive")
+        sys.exit(-1)
 
 
     if os.access(args.db_file, os.W_OK):
@@ -184,7 +190,8 @@ if __name__ == "__main__":
         jira_user = config["jira_user"],
         jira_api_token= config["jira_api_token"],
         database = args.db_file,
-        dryrun = args.dryrun
+        dryrun = args.dryrun,
+        initdb = args.initdb
     )
 
     # initialize our Jira connection
