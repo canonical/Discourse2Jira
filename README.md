@@ -34,7 +34,11 @@ In order to be able to post to Jira, the script needs some credentials. Use an A
 ```
     https://id.atlassian.com/manage-profile/security/api-tokens
 ```
-5. Run (see (initial setup)[#initial-setup] below before removing '-n')
+5. Create an empty database
+```
+   $ touch forum_db.json
+```
+6. Run (see (initial setup)[#initial-setup] below before removing '-n')
 ```
     $ ./main.py -n  # dry run, see what might happen
 ```
@@ -64,6 +68,11 @@ $ ./main.py -i
 - Inspect the database file and the forum manually and for any forum topics that already have Jira issues:
     - Replace the "0" with a non-zero value (preferably the Jira issue number, but any non-zero value will suffice).
 - This will prevent Discourse2Jira creating a new Jira issue for that topic. Issues created by Discourse2Jira will have that field populated with their Jira issue number, as per the example above (`SEC-2457')
+
+A sed one-liner to avoid update the database file so that NO new issues get created:
+```
+sed -i 's/\"0\"/\"skip\"/g' forum_db.json
+```
 
 
 ## Search period
