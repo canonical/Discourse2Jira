@@ -28,27 +28,29 @@ Included is code from lvoytek's [dsctriage](https://github.com/lvoytek/discourse
     $ cp example_config.json config.json
     [edit config.json in your favourite editor]
 ```
-4. Insert a Jira API token into your config
+4. Insert a Jira API token into your config.
+
 In order to be able to post to Jira, the script needs some credentials. Use an API token that you can generate here
 ```
-https://id.atlassian.com/manage-profile/security/api-tokens
+    https://id.atlassian.com/manage-profile/security/api-tokens
 ```
-5. Run (see [#initial-setup] below before removing '-n')
+5. Run (see (initial setup)[#initial-setup] below before removing '-n')
 ```
     $ ./main.py -n  # dry run, see what might happen
 ```
 
 ## The database format
 
-Each discourse topic is represented in a json 'database' file by default called forum_db.json.
+Each discourse topic is represented in a json 'database' file by default called `forum_db.json`.
+
 The format for each topic is
 ```
-  {
+{
     "id": 36045,
     "slug": "request-for-a-new-pc-gadget-snap-track-classic-23-10",
     "jira": "SEC-2457",
     "url": "https://forum.snapcraft.io/t/request-for-a-new-pc-gadget-snap-track-classic-23-10/36045/"
-  }
+}
 ```
 **Important** If a topic does not exist in the database, or has `"jira": "0"`, then a Jira issue will be created for it.
 
@@ -58,8 +60,15 @@ To avoid unnecessary Jira issue creation on first run (with an empty database), 
 ```
 $ ./main.py -i
 ```
-This will produce an forum_db.json that has 0's for each Jira entry (instead of actual Jira entries). If on inspection, any of those topics already have Jira issues, you should replace the "0" with a non-zero value (preferably the Jira issue number, but any non-zero value will suffice). This will prevent Discourse2Jira creating a new Jira issue for that topic. Issues created by Discourse2Jira will have that field populated with their Jira issue number, as per the example above (`SEC-2457')
+- This will produce a `forum_db.json` that has 0's for each Jira entry (instead of actual Jira issue numbers).
+- Inspect the database file and the forum manually and for any forum topics that already have Jira issues:
+    - Replace the "0" with a non-zero value (preferably the Jira issue number, but any non-zero value will suffice).
+- This will prevent Discourse2Jira creating a new Jira issue for that topic. Issues created by Discourse2Jira will have that field populated with their Jira issue number, as per the example above (`SEC-2457')
 
+
+## Search period
+
+By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./main.py -d 4w` to create Jira cards for the last 4 months worth of forum topics
 
 
 
