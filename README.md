@@ -68,7 +68,7 @@ $ ./main.py -i
 
 ## Search period
 
-By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./main.py -d 4w` to create Jira cards for the last 4 months worth of forum topics
+By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./main.py -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
 
 
 
