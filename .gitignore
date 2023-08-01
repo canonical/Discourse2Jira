@@ -1,2 +1,6 @@
 .vscode/
-draft.py
+venv/
+dsctriage/__pycache__/
+config.json
+forum_db.json
+
