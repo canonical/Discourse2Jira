@@ -38,9 +38,12 @@ In order to be able to post to Jira, the script needs some credentials. Use an A
 ```
    $ touch forum_db.json
 ```
-6. Run (see (initial setup)[#initial-setup] below before removing '-n')
+6. Run (see [initial setup](#initial-setup) below before removing '-n')
 ```
-    $ ./dsc2jira.py -n  # dry run, see what might happen
+    $ ./dsc2jira.py -n  # dry run, see what might happen with no databse
+    $ ./dsc2jira.py -i  # initialise the database so that no initial issues are created
+    (optional) edit the database as described below 
+    $ ./dsc2jira.py     # all future runs :)
 ```
 
 ## The database format
@@ -59,20 +62,18 @@ The format for each topic is
 **Important** If a topic does not exist in the database, or has `"jira": "0"`, then a Jira issue will be created for it.
 
 ### Initial setup
+(first time only, prevents excess Jira issue creation)
 
 To avoid unnecessary Jira issue creation on first run (with an empty database), you should perform a database initialization with:
 ```
 $ ./dsc2jira.py -i
 ```
-- This will produce a `forum_db.json` that has 0's for each Jira entry (instead of actual Jira issue numbers).
-- Inspect the database file and the forum manually and for any forum topics that already have Jira issues:
-    - Replace the "0" with a non-zero value (preferably the Jira issue number, but any non-zero value will suffice).
-- This will prevent Discourse2Jira creating a new Jira issue for that topic. Issues created by Discourse2Jira will have that field populated with their Jira issue number, as per the example above (`SEC-2457')
+- This will produce a `forum_db.json` that has "skip" for each Jira entry (instead of actual Jira issue numbers)
+- Inspect the database file and the forum manually and for any forum topics that you would like Jira issues created for
+    - Replace the value "skip" with a 0.
+    - On subsequent runs, any database items that have a Jira value of 0, will also have issues created for them, and that field updated.
+    - You can use dry-run `-n` to test
 
-A sed one-liner to avoid update the database file so that NO new issues get created:
-```
-sed -i 's/\"0\"/\"skip\"/g' forum_db.json
-```
 
 
 ## Search period

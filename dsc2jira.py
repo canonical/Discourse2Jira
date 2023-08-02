@@ -84,9 +84,10 @@ def create_issue(config, project, summary, desc, issuetype, component):
     if not config.dryrun and not config.initdb:
         issue = jira.create_issue(fields=issue_dict)
         logging.info("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
+        return issue
     else:
         logging.info("[DRY RUN] creating ticket: {}, {}".format(issue, issue_dict["summary"]))
-    return issue
+        return "skip"
     
 
 
@@ -115,6 +116,10 @@ def main(conf, start_date):
     # there's an additional check for db items without jira entries already, this is for initial setup
     # and would not usually be expected to be taken
     
+    #in order to accurately track the number of items in the db (when Found = True) that also need a
+    # jira issue created for them (where Jira="0"), we use this variable
+    updated_items_cnt = 0   
+
     for forum_topic in forum_topics:
         found = False
         logging.debug("topic: {}".format(forum_topic["slug"]))
@@ -123,10 +128,11 @@ def main(conf, start_date):
                 found = True
                 logging.debug("found a matching topic in the db")
                 if db_entry["jira"] == "0":
-                    # this shouldn't happen but for first initialization (first time script is EVER run) 
+                    # this is for the case when an entry exists in the db but not in Jira
                     issue = create_issue(conf, 'SEC', forum_topic["slug"], "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review")
                     #also need to update the db
                     db_entry["jira"] = str(issue)
+                    updated_items_cnt = updated_items_cnt+1
                 else:
                     # this is the usual case, just log it
                     logging.debug("item already in database with jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
@@ -140,10 +146,10 @@ def main(conf, start_date):
     for i in new_list:
         database_list.append(i)
 
-    if not conf.dryrun:
-        logging.info("Created {} Jira entries".format(len(new_list)))
+    if not conf.dryrun and not conf.initdb:
+        logging.info("Created {} Jira entries".format(len(new_list) + updated_items_cnt))
     else:
-        logging.info("[DRY RUN] Created {} Jira entries".format(len(new_list)))
+        logging.info("[DRY RUN] Created {} Jira entries".format(len(new_list) + updated_items_cnt))
 
     #save the database
     if not conf.dryrun:
