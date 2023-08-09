@@ -32,7 +32,7 @@ class Configuration:
     
 def fetch_forum_topics(conf, start):
 
-    logging.info("Downloading 'store-requests' discourse forum topics since {}".format(start))
+    logging.info("Downloading '{}' discourse forum topics since {}".format(conf.forum_category, start))
     category = dsctriage.dscfinder.get_category_by_name(conf.forum_category, conf.forum_url)
     dsctriage.dscfinder.add_topics_to_category(category, start, conf.forum_url)
 
@@ -56,10 +56,10 @@ def parse_date_duration(date_param):
 
     return start_date
 
-def process_category(ctg):
+def process_category(conf, ctg):
     result_list = []
     for obj in ctg._topics:
-        result_list.append({"id": obj._id, "slug": obj._slug, "jira": "false", "url": "https://forum.snapcraft.io/t/{}/{}/".format(obj._slug, obj._id)})
+        result_list.append({"id": obj._id, "slug": obj._slug, "jira": "false", "url": "{}/t/{}/{}/".format(conf.forum_url, obj._slug, obj._id)})
     return result_list
 
 
@@ -97,7 +97,7 @@ def main(conf, start_date):
     category = fetch_forum_topics(conf, start_date)
 
     # extract just the elements we need from dsc's category object
-    forum_topics = process_category(category)
+    forum_topics = process_category(conf, category)
 
     # open the database file
     # TODO: make this a parameter
@@ -139,8 +139,8 @@ def main(conf, start_date):
                 break
         if found == False:
             # this is the case for forum topics that aren't in the database
-            issue = create_issue(conf, 'SEC', forum_topic["slug"], "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review")
-            new_list.append({"id": forum_topic["id"], "slug": forum_topic["slug"], "jira": str(issue), "url": "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"])})
+            issue = create_issue(conf, 'SEC', forum_topic["slug"], "{}/t/{}/{}/".format(conf.forum_url, forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review")
+            new_list.append({"id": forum_topic["id"], "slug": forum_topic["slug"], "jira": str(issue), "url": "{}/t/{}/{}/".format(conf.forum_url, forum_topic["slug"], forum_topic["id"])})
 
     # finished processing the forum topics so add the new list to the existing database
     for i in new_list:
