@@ -79,7 +79,7 @@ def create_issue(config, project, summary, desc, issuetype, component):
         'description': desc,
         'issuetype': {'name': issuetype},
         'components': [{'name': component}],
-        'customfield_10237': (datetime.date(datetime.today()) + timedelta(days=7)).isoformat()
+        'duedate': (datetime.date(datetime.today()) + timedelta(days=7)).isoformat()
     }
     issue = 0
     if not config.dryrun and not config.initdb:
