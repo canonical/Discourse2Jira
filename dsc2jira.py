@@ -135,6 +135,21 @@ def main(conf, start_date):
                     db_entry["jira"] = str(issue)
                     updated_items_cnt = updated_items_cnt+1
                 else:
+                    issue_key = db_entry["jira"]
+                    issue_to_check = jira.issue(issue_key, expand='changelog')
+                    try: 
+                        if issue_to_check.fields.status.name == "Rejected" or issue_to_check.fields.status.name == "Done":
+                            changelog = issue_to_check.changelog
+                            latest_change = changelog.histories[0]  # Assuming the latest change is at the beginning of the histories list
+                            latest_change_timestamp = latest_change.created
+                            datetime_tmp = datetime.strptime(latest_change_timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
+                            latest_change_datetime = datetime_tmp.astimezone(timezone.utc).replace(tzinfo=None)
+                            current_time = datetime.now()
+                            seven_days_ago = current_time - timedelta(days=7) # Assuming the date period to search back through is 7 days
+                            if latest_change_datetime < seven_days_ago:
+                                jira.transition_issue(issue_to_check, "In Progress")
+                    except:
+                        logging.debug("error reading status of jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                     # this is the usual case, just log it
                     logging.debug("item already in database with jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                 break
