@@ -136,6 +136,10 @@ def main(conf, start_date):
                     updated_items_cnt = updated_items_cnt+1
                 else:
                     issue_key = db_entry["jira"]
+                    if issue_key =="skip":
+                        logging.warning("Issue entry was skipped for topic {}. ".format(forum_topic["id"]))
+                        logging.warning("Please see https://github.com/canonical/Discourse2Jira/blob/main/README.md#initial-setup")
+                        continue
                     issue_to_check = jira.issue(issue_key, expand='changelog')
                     try: 
                         if issue_to_check.fields.status.name == "Rejected" or issue_to_check.fields.status.name == "Done":
