@@ -140,8 +140,8 @@ def main(conf, start_date):
                         logging.warning("Issue entry was skipped for topic {}. ".format(forum_topic["id"]))
                         logging.warning("Please see https://github.com/canonical/Discourse2Jira/blob/main/README.md#initial-setup")
                         continue
-                    issue_to_check = jira.issue(issue_key, expand='changelog')
                     try: 
+                        issue_to_check = jira.issue(issue_key, expand='changelog')
                         if issue_to_check.fields.status.name == "Rejected" or issue_to_check.fields.status.name == "Done":
                             changelog = issue_to_check.changelog
                             latest_change = changelog.histories[0]  # Assuming the latest change is at the beginning of the histories list
@@ -153,7 +153,7 @@ def main(conf, start_date):
                             if latest_change_datetime < seven_days_ago:
                                 jira.transition_issue(issue_to_check, "In Progress")
                     except:
-                        logging.debug("error reading status of jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
+                        logging.error("error reading status of jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                     # this is the usual case, just log it
                     logging.debug("item already in database with jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                 break
