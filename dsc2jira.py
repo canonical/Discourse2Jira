@@ -67,7 +67,8 @@ def import_json_db(filename):
     with open(filename, "r") as json_file:
         try:
             my_list = json.load(json_file)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logging.error(f"JSONDecodeError while importing db: {e}")
             return []
     return my_list
 
@@ -201,8 +202,10 @@ if __name__ == "__main__":
     else:
         logging.error("database file not does not exist or is not writable: {}".format(args.db_file))
         sys.exit(-1)
-
-    start_date = parse_date_duration(args.duration)
+    try:
+        start_date = parse_date_duration(args.duration)
+    except ValueError as e:
+        logging.error(f"Unable to resolve start_date: {e}")
     logging.debug(f"{start_date}")
     logging.debug("Using {} time period".format(args.duration))
 
