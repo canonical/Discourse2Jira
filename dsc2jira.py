@@ -204,6 +204,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     try:
         start_date = parse_date_duration(args.duration)
+        sys.exit(-1)
     except ValueError as e:
         logging.error(f"Unable to resolve start_date: {e}")
     logging.debug(f"{start_date}")
