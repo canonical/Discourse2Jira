@@ -32,11 +32,11 @@ class Configuration:
     
 def fetch_forum_topics(conf, start):
 
-    logging.info("Downloading 'store-requests' discourse forum topics since {}".format(start))
+    logging.debug("Downloading 'store-requests' discourse forum topics since {}".format(start))
     category = dsctriage.dscfinder.get_category_by_name(conf.forum_category, conf.forum_url)
     dsctriage.dscfinder.add_topics_to_category(category, start, conf.forum_url)
 
-    logging.info("{} topics downloaded".format(category))
+    logging.debug("{} topics downloaded".format(category))
 
     return category
 
@@ -84,10 +84,10 @@ def create_issue(config, project, summary, desc, issuetype, component):
     issue = 0
     if not config.dryrun and not config.initdb:
         issue = jira.create_issue(fields=issue_dict)
-        logging.info("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
+        logging.debug("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
         return issue
     else:
-        logging.info("[DRY RUN] creating ticket: {}, {}".format(issue, issue_dict["summary"]))
+        logging.debug("[DRY RUN] creating ticket: {}, {}".format(issue, issue_dict["summary"]))
         return "skip"
     
 
@@ -167,9 +167,9 @@ def main(conf, start_date):
         database_list.append(i)
 
     if not conf.dryrun and not conf.initdb:
-        logging.info("Created {} Jira entries".format(len(new_list) + updated_items_cnt))
+        logging.debug("Created {} Jira entries".format(len(new_list) + updated_items_cnt))
     else:
-        logging.info("[DRY RUN] Created {} Jira entries".format(len(new_list) + updated_items_cnt))
+        logging.debug("[DRY RUN] Created {} Jira entries".format(len(new_list) + updated_items_cnt))
 
     #save the database
     if not conf.dryrun:
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     start_date = parse_date_duration(args.duration)
-    logging.info(f"{start_date}")
+    logging.debug(f"{start_date}")
     logging.debug("Using {} time period".format(args.duration))
 
 
