@@ -32,11 +32,11 @@ class Configuration:
     
 def fetch_forum_topics(conf, start):
 
-    logging.info("Downloading 'store-requests' discourse forum topics since {}".format(start))
+    logging.debug("Downloading 'store-requests' discourse forum topics since {}".format(start))
     category = dsctriage.dscfinder.get_category_by_name(conf.forum_category, conf.forum_url)
     dsctriage.dscfinder.add_topics_to_category(category, start, conf.forum_url)
 
-    logging.info("{} topics downloaded".format(category))
+    logging.debug("{} topics downloaded".format(category))
 
     return category
 
@@ -67,7 +67,8 @@ def import_json_db(filename):
     with open(filename, "r") as json_file:
         try:
             my_list = json.load(json_file)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logging.error(f"JSONDecodeError while importing db: {e}")
             return []
     return my_list
 
@@ -84,10 +85,10 @@ def create_issue(config, project, summary, desc, issuetype, component):
     issue = 0
     if not config.dryrun and not config.initdb:
         issue = jira.create_issue(fields=issue_dict)
-        logging.info("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
+        logging.debug("creating ticket: {}, {}".format(issue, issue_dict["summary"]))
         return issue
     else:
-        logging.info("[DRY RUN] creating ticket: {}, {}".format(issue, issue_dict["summary"]))
+        logging.debug("[DRY RUN] creating ticket: {}, {}".format(issue, issue_dict["summary"]))
         return "skip"
     
 
@@ -140,8 +141,8 @@ def main(conf, start_date):
                         logging.warning("Issue entry was skipped for topic {}. ".format(forum_topic["id"]))
                         logging.warning("Please see https://github.com/canonical/Discourse2Jira/blob/main/README.md#initial-setup")
                         continue
-                    issue_to_check = jira.issue(issue_key, expand='changelog')
                     try: 
+                        issue_to_check = jira.issue(issue_key, expand='changelog')
                         if issue_to_check.fields.status.name == "Rejected" or issue_to_check.fields.status.name == "Done":
                             changelog = issue_to_check.changelog
                             latest_change = changelog.histories[0]  # Assuming the latest change is at the beginning of the histories list
@@ -153,7 +154,7 @@ def main(conf, start_date):
                             if latest_change_datetime < seven_days_ago:
                                 jira.transition_issue(issue_to_check, "In Progress")
                     except:
-                        logging.debug("error reading status of jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
+                        logging.error("error reading status of jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                     # this is the usual case, just log it
                     logging.debug("item already in database with jira ticket: {}, {}".format(db_entry["slug"], db_entry["jira"]))
                 break
@@ -167,9 +168,9 @@ def main(conf, start_date):
         database_list.append(i)
 
     if not conf.dryrun and not conf.initdb:
-        logging.info("Created {} Jira entries".format(len(new_list) + updated_items_cnt))
+        logging.debug("Created {} Jira entries".format(len(new_list) + updated_items_cnt))
     else:
-        logging.info("[DRY RUN] Created {} Jira entries".format(len(new_list) + updated_items_cnt))
+        logging.debug("[DRY RUN] Created {} Jira entries".format(len(new_list) + updated_items_cnt))
 
     #save the database
     if not conf.dryrun:
@@ -201,9 +202,12 @@ if __name__ == "__main__":
     else:
         logging.error("database file not does not exist or is not writable: {}".format(args.db_file))
         sys.exit(-1)
-
-    start_date = parse_date_duration(args.duration)
-    logging.info(f"{start_date}")
+    try:
+        start_date = parse_date_duration(args.duration)
+    except ValueError as e:
+        logging.error(f"Unable to resolve start_date: {e}")
+        sys.exit(-1)
+    logging.debug(f"{start_date}")
     logging.debug("Using {} time period".format(args.duration))
 
 
