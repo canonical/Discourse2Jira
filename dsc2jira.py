@@ -73,7 +73,7 @@ def import_json_db(filename):
     return my_list
 
 
-def create_issue(config, project, summary, desc, issuetype, component):
+def create_issue(config, project, summary, desc, issuetype, component, jira):
     issue_dict = {
         'project': {'key': project},
         'summary':  summary,
@@ -94,6 +94,9 @@ def create_issue(config, project, summary, desc, issuetype, component):
 
 
 def main(conf, start_date):
+
+    # initialize our Jira connection
+    jira = JIRA(server=conf.jira_server, basic_auth=(conf.jira_user, conf.jira_api_token))
 
     # use dsc to grab all the topics in the store category from the forum
     category = fetch_forum_topics(conf, start_date)
@@ -160,7 +163,7 @@ def main(conf, start_date):
                 break
         if found == False:
             # this is the case for forum topics that aren't in the database
-            issue = create_issue(conf, 'SEC', forum_topic["slug"], "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review")
+            issue = create_issue(conf, 'SEC', forum_topic["slug"], "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"]), 'Story', "Snap Review", jira=jira)
             new_list.append({"id": forum_topic["id"], "slug": forum_topic["slug"], "jira": str(issue), "url": "https://forum.snapcraft.io/t/{}/{}/".format(forum_topic["slug"], forum_topic["id"])})
 
     # finished processing the forum topics so add the new list to the existing database
@@ -177,7 +180,7 @@ def main(conf, start_date):
         with open(conf.database, "w") as json_file:
             json.dump(database_list, json_file)
 
-if __name__ == "__main__":
+def main_cli():
     parser = argparse.ArgumentParser(prog='ForumSync', description='Check that discourse topics have a matching Jira card.')
     parser.add_argument('-n', '--dry-run', dest='dryrun', help='Dry run. Do not perform any jira ticket creation or database writes', action='store_true')
     parser.add_argument('-i', '--init-db', dest='initdb', help='Create database records for fetched topics, but do not create Jira entries', action='store_true')
@@ -224,8 +227,8 @@ if __name__ == "__main__":
         initdb = args.initdb
     )
 
-    # initialize our Jira connection
-    jira = JIRA(server=conf.jira_server, basic_auth=(conf.jira_user, conf.jira_api_token))
-
     main(conf, start_date)
 
+
+if __name__ == "__main__":
+    main_cli()
