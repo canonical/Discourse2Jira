@@ -16,12 +16,12 @@ Included is code from lvoytek's [dsctriage](https://github.com/lvoytek/discourse
 ```
     $ git clone git@github.com:dclane-code/Discourse2Jira.git
 ```
-2. Create a virtual env and install jira module
+2. Create a virtual env and install the module (and its dependencies)
 ```
     $ cd Discourse2Jira
     $ python3 -m venv env
     $ . env/bin/activate
-    $ pip3 install jira
+    $ pip3 install .
 ```
 3. Create a config file
 ```
@@ -40,10 +40,10 @@ In order to be able to post to Jira, the script needs some credentials. Use an A
 ```
 6. Run (see [initial setup](#initial-setup) below before removing '-n')
 ```
-    $ ./dsc2jira.py -n  # dry run, see what might happen with no databse
-    $ ./dsc2jira.py -i  # initialise the database so that no initial issues are created
+    $ dsc2jira -n  # dry run, see what might happen with no databse
+    $ dsc2jira -i  # initialise the database so that no initial issues are created
     (optional) edit the database as described below 
-    $ ./dsc2jira.py     # all future runs :)
+    $ dsc2jira     # all future runs :)
 ```
 
 ## The database format
