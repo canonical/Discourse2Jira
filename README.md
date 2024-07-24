@@ -66,7 +66,7 @@ The format for each topic is
 
 To avoid unnecessary Jira issue creation on first run (with an empty database), you should perform a database initialization with:
 ```
-$ ./dsc2jira.py -i
+$ dsc2jira -i
 ```
 - This will produce a `forum_db.json` that has "skip" for each Jira entry (instead of actual Jira issue numbers)
 - Inspect the database file and the forum manually and for any forum topics that you would like Jira issues created for
@@ -78,13 +78,4 @@ $ ./dsc2jira.py -i
 
 ## Search period
 
-By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./dsc2jira.py -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
-
-
-
-
-
-
-
-
-
+By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `dsc2jira -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
