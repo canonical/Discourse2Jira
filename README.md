@@ -16,12 +16,12 @@ Included is code from lvoytek's [dsctriage](https://github.com/lvoytek/discourse
 ```
     $ git clone git@github.com:dclane-code/Discourse2Jira.git
 ```
-2. Create a virtual env and install jira module
+2. Create a virtual env and install the module (and its dependencies)
 ```
     $ cd Discourse2Jira
     $ python3 -m venv env
     $ . env/bin/activate
-    $ pip3 install jira
+    $ pip3 install .
 ```
 3. Create a config file
 ```
@@ -40,10 +40,10 @@ In order to be able to post to Jira, the script needs some credentials. Use an A
 ```
 6. Run (see [initial setup](#initial-setup) below before removing '-n')
 ```
-    $ ./dsc2jira.py -n  # dry run, see what might happen with no databse
-    $ ./dsc2jira.py -i  # initialise the database so that no initial issues are created
+    $ dsc2jira -n  # dry run, see what might happen with no databse
+    $ dsc2jira -i  # initialise the database so that no initial issues are created
     (optional) edit the database as described below 
-    $ ./dsc2jira.py     # all future runs :)
+    $ dsc2jira     # all future runs :)
 ```
 
 ## The database format
@@ -66,7 +66,7 @@ The format for each topic is
 
 To avoid unnecessary Jira issue creation on first run (with an empty database), you should perform a database initialization with:
 ```
-$ ./dsc2jira.py -i
+$ dsc2jira -i
 ```
 - This will produce a `forum_db.json` that has "skip" for each Jira entry (instead of actual Jira issue numbers)
 - Inspect the database file and the forum manually and for any forum topics that you would like Jira issues created for
@@ -78,13 +78,4 @@ $ ./dsc2jira.py -i
 
 ## Search period
 
-By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `./dsc2jira.py -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
-
-
-
-
-
-
-
-
-
+By default, Discourse2Jira searches for forum topics back 7-days from `now()`. This can be overriden with the `-d` argument, eg: `dsc2jira -d 4w` to create Jira cards for the last 4 weeks worth of forum topics
