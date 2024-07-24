@@ -1,0 +1,23 @@
+name: dsc2jira
+summary: Application to manage jira board from discourse updates
+description: |
+  This application is used by snap store reviewers to support 
+  request tracking in jira.
+
+base: core24
+version: git
+confinement: strict
+grade: stable
+
+apps:
+  dsc2jira:
+    command: bin/dsc2jira
+    plugs:
+      - home
+      - network
+      - network-bind
+
+parts:
+  dsc2jira:
+    plugin: python
+    source: .
