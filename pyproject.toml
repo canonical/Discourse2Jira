@@ -4,6 +4,9 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["dsc2jira.py"]
 
@@ -12,6 +15,7 @@ name = "Discourse2Jira"
 version = "0.1"
 dependencies = [
     "jira==3.8.0",
+    "dsctriage @ git+https://github.com/lvoytek/discourse-triage@1.4.1",
 ]
 requires-python = ">=3.8"
 
